@@ -8,11 +8,6 @@ function CRUD() {
     const [description, setDescription] = useState("");
     const [editId, setEditId] = useState(null);
 
-    const fetchItems = async () => {
-        const response = await axios.get("http://127.0.0.1:8000/items/");
-        setItems(response.data);
-    };
-
     const createItem = async () => {
         await axios.post("http://127.0.0.1:8000/items/", {
             title,
@@ -21,6 +16,11 @@ function CRUD() {
         setTitle("");
         setDescription("");
         fetchItems();
+    };
+
+    const fetchItems = async () => {
+        const response = await axios.get("http://127.0.0.1:8000/items/");
+        setItems(response.data);
     };
 
     const updateItem = async () => {

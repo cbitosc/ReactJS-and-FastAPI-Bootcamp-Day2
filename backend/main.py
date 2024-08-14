@@ -24,6 +24,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Root endpoint: Returns a welcome message
+@app.get("/")
+def read_root():
+    return {"message": "Hello, World!"}
+
+# Greeting endpoint: Returns a greeting message with path parameters
+@app.get("/greet/{time_of_day}/{name}")
+def read_path_params(time_of_day: str, name: str):
+    return {"message": f"Good {time_of_day}, {name}!"}
+
+# Greeting endpoint: Returns a greeting message with query parameters
+@app.get("/greet")
+def read_query_params(time_of_day: str, name: str):
+    return {"message": f"Good {time_of_day}, {name}!"}
+
+
 # Database model
 class Item(Base):
     __tablename__ = "items"
@@ -44,23 +60,9 @@ class ItemResponse(ItemCreate):
     class Config:
         orm_mode = True
 
-# Root endpoint: Returns a welcome message
-@app.get("/")
-def read_root():
-    return {"message": "Hello, World!"}
-
-# Greeting endpoint: Returns a greeting message with path parameters
-@app.get("/greet/{time_of_day}/{name}")
-def read_path_params(time_of_day: str, name: str):
-    return {"message": f"Good {time_of_day}, {name}!"}
-
-# Greeting endpoint: Returns a greeting message with query parameters
-@app.get("/greet")
-def read_query_params(time_of_day: str, name: str):
-    return {"message": f"Good {time_of_day}, {name}!"}
 
 # Create an item: Adds a new item to the database
-@app.post("/items/", response_model=ItemResponse)
+@app.post("/items/")
 def create_item(item: ItemCreate):
     db = SessionLocal()
     db_item = Item(**item.dict())
@@ -71,7 +73,7 @@ def create_item(item: ItemCreate):
     return db_item
 
 # Read all items: Retrieves all items from the database
-@app.get("/items/", response_model=List[ItemResponse])
+@app.get("/items/")
 def read_items():
     db = SessionLocal()
     items = db.query(Item).all()
@@ -79,7 +81,7 @@ def read_items():
     return items
 
 # Read a single item: Retrieves a specific item by ID
-@app.get("/items/{item_id}", response_model=ItemResponse)
+@app.get("/items/{item_id}")
 def read_item(item_id: int):
     db = SessionLocal()
     item = db.query(Item).filter(Item.id == item_id).first()
@@ -89,7 +91,7 @@ def read_item(item_id: int):
     return item
 
 # Update an item: Modifies an existing item by ID
-@app.put("/items/{item_id}", response_model=ItemResponse)
+@app.put("/items/{item_id}")
 def update_item(item_id: int, item: ItemCreate):
     db = SessionLocal()
     db_item = db.query(Item).filter(Item.id == item_id).first()
